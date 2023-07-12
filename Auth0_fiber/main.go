@@ -21,8 +21,7 @@ func main() {
 
 	app := fiber.New()
 
-	rtr := router.New(auth)
-	app.Use(rtr)
+	router.New(app, auth)
 
 	log.Print("Server listening on http://localhost:3000/")
 	if err := app.Listen(":3000"); err != nil {

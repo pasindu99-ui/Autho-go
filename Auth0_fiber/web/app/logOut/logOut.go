@@ -9,8 +9,9 @@ import (
 )
 
 // Handler for our logout.
+
 func Handler(ctx *fiber.Ctx) error {
-	logoutURL, err := url.Parse("https://" + os.Getenv("AUTH0_DOMAIN") + "/v2/logout")
+	logoutUrl, err := url.Parse("https://" + os.Getenv("AUTH0_DOMAIN") + "/v2/logout")
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).SendString(err.Error())
 	}
@@ -28,7 +29,7 @@ func Handler(ctx *fiber.Ctx) error {
 	parameters := url.Values{}
 	parameters.Add("returnTo", returnTo.String())
 	parameters.Add("client_id", os.Getenv("AUTH0_CLIENT_ID"))
-	logoutURL.RawQuery = parameters.Encode()
+	logoutUrl.RawQuery = parameters.Encode()
 
-	return ctx.Redirect(logoutURL.String(), http.StatusTemporaryRedirect)
+	return ctx.Redirect(logoutUrl.String(), http.StatusTemporaryRedirect)
 }

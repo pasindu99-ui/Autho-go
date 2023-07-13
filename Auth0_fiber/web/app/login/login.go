@@ -13,6 +13,7 @@ import (
 
 // Handler for our login.
 func Handler(auth *authenticator.Authenticator) fiber.Handler {
+
 	return func(ctx *fiber.Ctx) error {
 		state, err := generateRandomState()
 		if err != nil {
@@ -20,11 +21,12 @@ func Handler(auth *authenticator.Authenticator) fiber.Handler {
 		}
 
 		// Save the state inside the session.
-		session := session.New().Get(ctx)
-		session.Set("state", state)
-		fmt.Println("session44444", session)
-		fmt.Println("session 222222", session.Get("state"), "     0000000000000000    ", state)
-		if err := session.Save(); err != nil {
+		store := session.New()
+		sess := store.Get(ctx)
+		sess.Set("state", state)
+		fmt.Println("session44444", sess)
+		fmt.Println("session 222222", sess.Get("state"), "     0000000000000000    ", state)
+		if err := sess.Save(); err != nil {
 			return ctx.Status(http.StatusInternalServerError).SendString(err.Error())
 		}
 

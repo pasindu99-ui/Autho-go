@@ -2,6 +2,7 @@ package callback
 
 import (
 	"AUTH0_FIBER/platform/authenticator"
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,8 +12,17 @@ import (
 // Handler for our callback.
 func Handler(auth *authenticator.Authenticator) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		session, err := session.New().Get(ctx)
-		if ctx.Query("state") != session.Get("state") {
+		sess, err := session.New().Get(ctx)
+		keys := sess.Keys()
+		fmt.Println("keys", keys)
+		fmt.Println("sess", sess)
+		if err != nil {
+			panic(err)
+		}
+		// Get value
+		state := sess.Get("state")
+		fmt.Println("stateweeeeeeeeeeeee", state)
+		if ctx.Query("state") != state {
 			return ctx.Status(http.StatusBadRequest).SendString("Invalid state parameter.")
 		}
 
@@ -32,9 +42,9 @@ func Handler(auth *authenticator.Authenticator) fiber.Handler {
 			return ctx.Status(http.StatusInternalServerError).SendString(err.Error())
 		}
 
-		session.Set("access_token", token.AccessToken)
-		session.Set("profile", profile)
-		if err := session.Save(); err != nil {
+		sess.Set("access_token", token.AccessToken)
+		sess.Set("profile", profile)
+		if err := sess.Save(); err != nil {
 			return ctx.Status(http.StatusInternalServerError).SendString(err.Error())
 		}
 
